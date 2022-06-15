@@ -4,15 +4,11 @@ import me.blairwilson.votemod.commands.BaseCommand;
 import me.blairwilson.votemod.config.ConfigHandler;
 import me.blairwilson.votemod.data.ConfigVote;
 import me.blairwilson.votemod.data.Vote;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.level.block.NoteBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -48,8 +44,7 @@ public class VoteMod {
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
+    public void onServerStarting(ServerStartingEvent event) {
         CONFIG = ConfigHandler.sync(ConfigHandler.getSaveFile());
         CONFIG.handleConfigVotes();
         BaseCommand.register(regCommsEvent.getDispatcher());
