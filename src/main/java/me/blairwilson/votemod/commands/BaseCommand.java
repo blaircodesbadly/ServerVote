@@ -1,0 +1,95 @@
+package me.blairwilson.votemod.commands;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import me.blairwilson.votemod.VoteMod;
+import me.blairwilson.votemod.data.ConfigVote;
+import me.blairwilson.votemod.data.Vote;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.*;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraftforge.server.ServerLifecycleHooks;
+
+import java.util.UUID;
+
+public class BaseCommand {
+
+    public static void register(CommandDispatcher<CommandSourceStack> cmdDisp) {
+        LiteralArgumentBuilder<CommandSourceStack> parentCommand = Commands.literal("vote");/* /vote */
+
+        LiteralArgumentBuilder<CommandSourceStack> weatherCommand = Commands.literal("weather"); /* /vote weather */
+
+        parentCommand.executes(context -> {
+            //does nothing
+            return 1;
+        });
+
+        weatherCommand.executes(context -> {
+            ServerPlayer p = context.getSource().getPlayerOrException();
+            BaseCommand.handleVote(p, "change weather to sun");
+            VoteMod.voteList.add(new Vote(p.getName().getString(), () -> {
+                ServerLifecycleHooks.getCurrentServer().overworld().setWeatherParameters(72000, 0, false, false);
+            }));
+            return 1;
+        });
+
+        parentCommand.then(weatherCommand);
+
+        parentCommand.then(Commands.literal("yes").executes(context -> {
+            if (!VoteMod.voteList.isEmpty()) {
+                ServerPlayer p = context.getSource().getPlayerOrException();
+                p.sendMessage(new TextComponent("You have voted YES").withStyle(Style.EMPTY.withColor(9633635)), UUID.randomUUID());
+                VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), true);
+            }
+            return 1;
+        }));
+
+        parentCommand.then(Commands.literal("no").executes(context -> {
+            if (!VoteMod.voteList.isEmpty()) {
+                ServerPlayer p = context.getSource().getPlayerOrException();
+                p.sendMessage(new TextComponent("You have voted NO").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
+                VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), false);
+            }
+            return 1;
+        }));
+
+        for(ConfigVote cfgCmd : VoteMod.configVoteList){ /* handle config votes */
+            LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal(cfgCmd.getAlias());
+            command.executes(context -> {
+                BaseCommand.handleVote(context.getSource().getPlayerOrException(), cfgCmd.getDesc());
+                Vote vote = new Vote(context.getSource().getPlayerOrException().getName().getString(), () -> {
+                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                    server.getCommands().performCommand(server.createCommandSourceStack(), cfgCmd.getCommand());
+                });
+                VoteMod.voteList.add(vote);
+                return 1;
+            });
+            parentCommand.then(command); /* add as child of parentCommand eg. /vote ALIAS */
+        }
+
+        cmdDisp.register(parentCommand);
+
+
+    }
+
+    public static void handleVote(ServerPlayer p, String desc){ /* code to run on each vote */
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1f, 1f));
+        TextComponent initial = new TextComponent(p.getName().getString() + " has initiated a vote to "+desc+".");
+        initial.withStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD)));
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(initial, ChatType.CHAT, UUID.randomUUID());
+
+        TextComponent yes = new TextComponent("[YES] ");
+        TextComponent no = new TextComponent(" [NO]");
+
+        yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
+        no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
+        yes.append(no);
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(yes, ChatType.CHAT, UUID.randomUUID());
+    }
+
+}
