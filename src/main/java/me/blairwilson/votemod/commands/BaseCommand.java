@@ -30,11 +30,11 @@ public class BaseCommand {
         });
 
         weatherCommand.executes(context -> {
-            ServerPlayer p = context.getSource().getPlayerOrException();
-            BaseCommand.handleVote(p, "change weather to sun");
-            VoteMod.voteList.add(new Vote(p.getName().getString(), () -> {
-                ServerLifecycleHooks.getCurrentServer().overworld().setWeatherParameters(72000, 0, false, false);
-            }));
+            if (VoteMod.voteList.isEmpty()) {
+                ServerPlayer p = context.getSource().getPlayerOrException();
+                BaseCommand.handleVote(p, "change weather to sun");
+                VoteMod.voteList.add(new Vote(p.getName().getString(), () -> ServerLifecycleHooks.getCurrentServer().overworld().setWeatherParameters(72000, 0, false, false)));
+            }
             return 1;
         });
 
@@ -58,15 +58,17 @@ public class BaseCommand {
             return 1;
         }));
 
-        for(ConfigVote cfgCmd : VoteMod.configVoteList){ /* handle config votes */
+        for (ConfigVote cfgCmd : VoteMod.configVoteList) { /* handle config votes */
             LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal(cfgCmd.getAlias());
             command.executes(context -> {
-                BaseCommand.handleVote(context.getSource().getPlayerOrException(), cfgCmd.getDesc());
-                Vote vote = new Vote(context.getSource().getPlayerOrException().getName().getString(), () -> {
-                    MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-                    server.getCommands().performCommand(server.createCommandSourceStack(), cfgCmd.getCommand());
-                });
-                VoteMod.voteList.add(vote);
+                if (VoteMod.voteList.isEmpty()) {
+                    BaseCommand.handleVote(context.getSource().getPlayerOrException(), cfgCmd.getDesc());
+                    Vote vote = new Vote(context.getSource().getPlayerOrException().getName().getString(), () -> {
+                        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+                        server.getCommands().performCommand(server.createCommandSourceStack(), cfgCmd.getCommand());
+                    });
+                    VoteMod.voteList.add(vote);
+                }
                 return 1;
             });
             parentCommand.then(command); /* add as child of parentCommand eg. /vote ALIAS */
@@ -77,9 +79,9 @@ public class BaseCommand {
 
     }
 
-    public static void handleVote(ServerPlayer p, String desc){ /* code to run on each vote */
+    public static void handleVote(ServerPlayer p, String desc) { /* code to run on each vote */
         ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1f, 1f));
-        TextComponent initial = new TextComponent(p.getName().getString() + " has initiated a vote to "+desc+".");
+        TextComponent initial = new TextComponent(p.getName().getString() + " has initiated a vote to " + desc + ".");
         initial.withStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD)));
         ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(initial, ChatType.CHAT, UUID.randomUUID());
 
