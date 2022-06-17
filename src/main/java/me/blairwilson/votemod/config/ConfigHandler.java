@@ -16,10 +16,13 @@ public class ConfigHandler {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().enableComplexMapKeySerialization().excludeFieldsWithoutExposeAnnotation().create();
     private File saveFile;
     @Expose
+    private String commandAlias;
+    @Expose
     private List<ConfigVote> configVotes = new ArrayList<>();
 
     public ConfigHandler(File saveFile) {
         this.saveFile = saveFile;
+        this.commandAlias="vote";
     }
 
     public static File getSaveFile() {
@@ -28,21 +31,30 @@ public class ConfigHandler {
 
     public static ConfigHandler sync(File saveFile) {
         ConfigHandler cfg;
-        try (Reader r = new FileReader(saveFile)) {
-            cfg = GSON.fromJson(r, ConfigHandler.class);
-        } catch (Exception e) {
+        if(saveFile.exists()){
+            try (Reader r = new FileReader(saveFile)) {
+                cfg = GSON.fromJson(r, ConfigHandler.class);
+            } catch (Exception e) {
+                cfg = new ConfigHandler(getSaveFile());
+            }
+        } else {
             cfg = new ConfigHandler(getSaveFile());
+
+            List<ConfigVote> test = new ArrayList<>();
+            ConfigVote testVote = new ConfigVote();
+            testVote.setCommand("/say hello from console");
+            testVote.setAlias("test");
+            testVote.setDesc("say test from console");
+            test.add(testVote);
+
+            cfg.setConfigVotes(test);
         }
+
         cfg.saveFile = getSaveFile();
 
-        List<ConfigVote> test = new ArrayList<>();
-        ConfigVote testVote = new ConfigVote();
-        testVote.setCommand("/say hello from console");
-        testVote.setAlias("test");
-        testVote.setDesc("say test from console");
-        test.add(testVote);
+        if(cfg.getCommandAlias()==null || cfg.getCommandAlias().isEmpty())
+            cfg.setCommandAlias("vote");
 
-        cfg.setConfigVotes(test);
         cfg.save();
 
         return cfg;
@@ -66,5 +78,13 @@ public class ConfigHandler {
 
     public void setConfigVotes(List<ConfigVote> configVotes) {
         this.configVotes = configVotes;
+    }
+
+    public String getCommandAlias() {
+        return commandAlias;
+    }
+
+    public void setCommandAlias(String commandAlias) {
+        this.commandAlias = commandAlias;
     }
 }

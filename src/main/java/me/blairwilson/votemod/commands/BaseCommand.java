@@ -20,9 +20,9 @@ import java.util.UUID;
 public class BaseCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> cmdDisp) {
-        LiteralArgumentBuilder<CommandSourceStack> parentCommand = Commands.literal("vote");/* /vote */
+        LiteralArgumentBuilder<CommandSourceStack> parentCommand = Commands.literal(VoteMod.CONFIG.getCommandAlias());
 
-        LiteralArgumentBuilder<CommandSourceStack> weatherCommand = Commands.literal("weather"); /* /vote weather */
+        LiteralArgumentBuilder<CommandSourceStack> weatherCommand = Commands.literal("weather"); /* /alias weather */
 
         parentCommand.executes(context -> {
             //does nothing
@@ -88,8 +88,8 @@ public class BaseCommand {
         TextComponent yes = new TextComponent("[YES] ");
         TextComponent no = new TextComponent(" [NO]");
 
-        yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
-        no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
+        yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
+        no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
         yes.append(no);
         ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(yes, ChatType.CHAT, UUID.randomUUID());
     }
