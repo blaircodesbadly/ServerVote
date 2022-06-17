@@ -43,8 +43,11 @@ public class BaseCommand {
         parentCommand.then(Commands.literal("yes").executes(context -> {
             if (!VoteMod.voteList.isEmpty()) {
                 ServerPlayer p = context.getSource().getPlayerOrException();
-                p.sendMessage(new TextComponent("You have voted YES").withStyle(Style.EMPTY.withColor(9633635)), UUID.randomUUID());
-                VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), true);
+                if(!VoteMod.voteList.get(0).votes.containsKey(p.getUUID())){
+                    p.sendMessage(new TextComponent("You have voted YES").withStyle(Style.EMPTY.withColor(9633635)), UUID.randomUUID());
+                    VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), true);
+                } else
+                    p.sendMessage(new TextComponent("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
             }
             return 1;
         }));
@@ -52,8 +55,11 @@ public class BaseCommand {
         parentCommand.then(Commands.literal("no").executes(context -> {
             if (!VoteMod.voteList.isEmpty()) {
                 ServerPlayer p = context.getSource().getPlayerOrException();
-                p.sendMessage(new TextComponent("You have voted NO").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
-                VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), false);
+                if(!VoteMod.voteList.get(0).votes.containsKey(p.getUUID())){
+                    p.sendMessage(new TextComponent("You have voted NO").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
+                    VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), false);
+                } else
+                    p.sendMessage(new TextComponent("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
             }
             return 1;
         }));
