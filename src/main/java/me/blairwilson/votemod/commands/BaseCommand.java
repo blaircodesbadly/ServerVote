@@ -32,7 +32,7 @@ public class BaseCommand {
         weatherCommand.executes(context -> {
             if (VoteMod.voteList.isEmpty()) {
                 ServerPlayer p = context.getSource().getPlayerOrException();
-                BaseCommand.handleVote(p, "change weather to sun");
+                BaseCommand.handleVote(p, "change weather to clear");
                 VoteMod.voteList.add(new Vote(p.getName().getString(), () -> ServerLifecycleHooks.getCurrentServer().overworld().setWeatherParameters(72000, 0, false, false)));
             }
             return 1;
