@@ -5,8 +5,8 @@ import me.blairwilson.votemod.config.ConfigHandler;
 import me.blairwilson.votemod.data.ConfigVote;
 import me.blairwilson.votemod.data.Vote;
 import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.common.MinecraftForge;
@@ -61,11 +61,11 @@ public class VoteMod {
                 }
 
                 if (yes >= no) {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new TextComponent("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(9633635)), ChatType.CHAT, UUID.randomUUID());
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(9633635)), ChatType.CHAT);
                     ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.5f, 1f));
                     vote.runnable.run();
                 } else {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new TextComponent("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(15218733)), ChatType.CHAT, UUID.randomUUID());
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(15218733)), ChatType.CHAT);
                 }
 
                 voteCounter = 0;

@@ -44,10 +44,10 @@ public class BaseCommand {
             if (!VoteMod.voteList.isEmpty()) {
                 ServerPlayer p = context.getSource().getPlayerOrException();
                 if(!VoteMod.voteList.get(0).votes.containsKey(p.getUUID())){
-                    p.sendMessage(new TextComponent("You have voted YES").withStyle(Style.EMPTY.withColor(9633635)), UUID.randomUUID());
+                    p.sendSystemMessage(Component.literal("You have voted YES").withStyle(Style.EMPTY.withColor(9633635)));
                     VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), true);
                 } else
-                    p.sendMessage(new TextComponent("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
+                    p.sendSystemMessage(Component.literal("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)));
             }
             return 1;
         }));
@@ -56,10 +56,10 @@ public class BaseCommand {
             if (!VoteMod.voteList.isEmpty()) {
                 ServerPlayer p = context.getSource().getPlayerOrException();
                 if(!VoteMod.voteList.get(0).votes.containsKey(p.getUUID())){
-                    p.sendMessage(new TextComponent("You have voted NO").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
+                    p.sendSystemMessage(Component.literal("You have voted NO").withStyle(Style.EMPTY.withColor(15218733)));
                     VoteMod.voteList.get(0).votes.putIfAbsent(p.getUUID(), false);
                 } else
-                    p.sendMessage(new TextComponent("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)), UUID.randomUUID());
+                    p.sendSystemMessage(Component.literal("You have already voted!").withStyle(Style.EMPTY.withColor(15218733)));
             }
             return 1;
         }));
@@ -87,17 +87,17 @@ public class BaseCommand {
 
     public static void handleVote(ServerPlayer p, String desc) { /* code to run on each vote */
         ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1f, 1f));
-        TextComponent initial = new TextComponent(p.getName().getString() + " has initiated a vote to " + desc + ".");
+        MutableComponent initial = Component.literal(p.getName().getString() + " has initiated a vote to " + desc + ".");
         initial.withStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD)));
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(initial, ChatType.CHAT, UUID.randomUUID());
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(initial, ChatType.CHAT);
 
-        TextComponent yes = new TextComponent("[YES] ");
-        TextComponent no = new TextComponent(" [NO]");
+        MutableComponent yes = Component.literal("[YES] ");
+        MutableComponent no = Component.literal(" [NO]");
 
-        yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
-        no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
+        yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
+        no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
         yes.append(no);
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(yes, ChatType.CHAT, UUID.randomUUID());
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(yes, ChatType.CHAT);
     }
 
 }
