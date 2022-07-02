@@ -89,7 +89,7 @@ public class BaseCommand {
         ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1f, 1f));
         MutableComponent initial = Component.literal(p.getName().getString() + " has initiated a vote to " + desc + ".");
         initial.withStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD)));
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(initial, ChatType.CHAT);
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(initial, ChatType.SYSTEM);
 
         MutableComponent yes = Component.literal("[YES] ");
         MutableComponent no = Component.literal(" [NO]");
@@ -97,7 +97,7 @@ public class BaseCommand {
         yes.setStyle(yes.getStyle().withColor(9633635).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" yes")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click me to vote YES").withStyle(Style.EMPTY.withColor(9633635)))));
         no.setStyle(no.getStyle().withColor(15218733).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/"+VoteMod.CONFIG.getCommandAlias()+" no")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click me to vote NO").withStyle(Style.EMPTY.withColor(15218733)))));
         yes.append(no);
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(yes, ChatType.CHAT);
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(yes, ChatType.SYSTEM);
     }
 
 }
