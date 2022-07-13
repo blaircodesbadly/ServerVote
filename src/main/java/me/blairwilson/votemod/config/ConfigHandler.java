@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import me.blairwilson.votemod.VoteMod;
 import me.blairwilson.votemod.data.ConfigVote;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.io.*;
 import java.util.ArrayList;

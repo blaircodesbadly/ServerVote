@@ -4,20 +4,22 @@ import me.blairwilson.votemod.commands.BaseCommand;
 import me.blairwilson.votemod.config.ConfigHandler;
 import me.blairwilson.votemod.data.ConfigVote;
 import me.blairwilson.votemod.data.Vote;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.Color;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkConstants;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +34,11 @@ public class VoteMod {
 
     public VoteMod() {
         MinecraftForge.EVENT_BUS.register(this);
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        ModLoadingContext.get().registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(() -> FMLNetworkConstants.IGNORESERVERONLY, (a, b) -> true));
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
+    public void onServerStarting(FMLServerStartingEvent event) {
         CONFIG = ConfigHandler.sync(ConfigHandler.getSaveFile());
         CONFIG.handleConfigVotes();
         BaseCommand.register(event.getServer().getCommands().getDispatcher());
@@ -61,11 +63,11 @@ public class VoteMod {
                 }
 
                 if (yes >= no) {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new TextComponent("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(9633635)), ChatType.CHAT, UUID.randomUUID());
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.5f, 1f));
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new StringTextComponent("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(Color.fromRgb(9633635))), ChatType.CHAT, UUID.randomUUID());
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundCategory.MASTER,0.5f, 1f));
                     vote.runnable.run();
                 } else {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new TextComponent("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(15218733)), ChatType.CHAT, UUID.randomUUID());
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastMessage(new StringTextComponent("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(Color.fromRgb(15218733))), ChatType.CHAT, UUID.randomUUID());
                 }
 
                 voteCounter = 0;
