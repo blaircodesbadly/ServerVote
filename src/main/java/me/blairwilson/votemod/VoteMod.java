@@ -61,11 +61,11 @@ public class VoteMod {
                 }
 
                 if (yes >= no) {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(9633635)), ChatType.SYSTEM);
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has been successful.").withStyle(Style.EMPTY.withColor(9633635)), false);
                     ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.5f, 1f));
                     vote.runnable.run();
                 } else {
-                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(15218733)), ChatType.SYSTEM);
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(Component.literal("The vote started by " + vote.startedBy + " has failed.").withStyle(Style.EMPTY.withColor(15218733)), false);
                 }
 
                 voteCounter = 0;

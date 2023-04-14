@@ -42,9 +42,9 @@ public class ConfigHandler {
 
             List<ConfigVote> test = new ArrayList<>();
             ConfigVote testVote = new ConfigVote();
-            testVote.setCommand("/say hello from console");
+            testVote.setCommand("say hello from console");
             testVote.setAlias("test");
-            testVote.setDesc("say test from console");
+            testVote.setDesc("Test say command");
             test.add(testVote);
 
             cfg.setConfigVotes(test);
