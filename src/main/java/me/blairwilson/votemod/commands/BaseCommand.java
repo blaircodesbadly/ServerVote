@@ -87,7 +87,7 @@ public class BaseCommand {
     }
 
     public static void handleVote(ServerPlayer p, String desc) { /* code to run on each vote */
-        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1f, 1f));
+        ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().forEach(serverPlayer -> serverPlayer.playNotifySound(SoundEvents.NOTE_BLOCK_PLING.get(), SoundSource.MASTER, 1f, 1f));
         MutableComponent initial = Component.literal(p.getName().getString() + " has initiated a vote to " + desc + ".");
         initial.withStyle(Style.EMPTY.withColor(TextColor.fromLegacyFormat(ChatFormatting.GOLD)));
         ServerLifecycleHooks.getCurrentServer().getPlayerList().broadcastSystemMessage(initial, false);
